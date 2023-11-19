@@ -2,11 +2,13 @@
 
 
 #include "ShooterCharacter.h"
+#include "EnhancedInputSubsystems.h"
+#include "EnhancedInputComponent.h"
 
 // Sets default values
 AShooterCharacter::AShooterCharacter()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 }
@@ -15,7 +17,14 @@ AShooterCharacter::AShooterCharacter()
 void AShooterCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	PlayerController = Cast<APlayerController>(GetController());
+
+	if (PlayerController) {
+		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer())) {
+			Subsystem->AddMappingContext(MappingContext, 0);
+		}
+	}
 }
 
 // Called every frame
@@ -30,5 +39,44 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent)) {
+		EnhancedInputComponent->BindAction(ShootAction, ETriggerEvent::Triggered, this, &AShooterCharacter::Shoot);
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ACharacter::Jump);
+		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AShooterCharacter::Look);
+		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AShooterCharacter::Move);
+	}
 }
 
+void AShooterCharacter::Shoot(const FInputActionValue& Value) {
+	const bool value = Value.Get<bool>();
+
+	if (GetController() && value)
+	{
+		UE_LOG(LogTemp, Display, TEXT("Shoot action has trigered"));
+	}
+}
+
+void AShooterCharacter::Look(const FInputActionValue& Value) {
+	const FVector2D lookAxisValue = Value.Get<FVector2D>();
+
+	if (GetController() && lookAxisValue.XY != 0)
+	{
+		AddControllerYawInput(lookAxisValue.X);
+		AddControllerPitchInput(lookAxisValue.Y);
+	}
+}
+
+void AShooterCharacter::Move(const FInputActionValue& Value) {
+	const FVector2D moveAxisValue = Value.Get<FVector2D>();
+
+	if (GetController() && moveAxisValue.XY != 0)
+	{
+		const FRotator Rotation = Controller->GetControlRotation();
+		const FRotator YawRotation(0.f, Rotation.Yaw, 0.f);
+
+		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+		AddMovementInput(ForwardDirection, moveAxisValue.Y);
+		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+		AddMovementInput(RightDirection, moveAxisValue.X);
+	}
+}
