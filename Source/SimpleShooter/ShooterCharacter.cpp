@@ -58,7 +58,7 @@ void AShooterCharacter::Shoot(const FInputActionValue& Value) {
 
 	if (GetController() && value)
 	{
-		UE_LOG(LogTemp, Display, TEXT("Shoot action has trigered"));
+		Gun->PullTrigger();
 	}
 }
 
