@@ -38,4 +38,7 @@ private:
 
 	UPROPERTY(EditDefaultsOnly)
 	float MaxRange = 5000.f;
+
+	UPROPERTY(EditDefaultsOnly)
+	float Damage = 10.f;
 };
