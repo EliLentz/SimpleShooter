@@ -40,9 +40,12 @@ void AShooterCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (Health <= 0.f && PlayerController != nullptr) {
+		//PlayerController->DisableInput(PlayerController);
+	}
 }
 
-bool AShooterCharacter::isDead() const {
+bool AShooterCharacter::IsDead() const {
 	return Health <= 0.f;
 }
 
