@@ -7,10 +7,6 @@
 void AShooterAIController::BeginPlay()
 {
 	Super::BeginPlay();
-	APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
-
-	
-	
 }
 
 void AShooterAIController::Tick(float DeltaSeconds)
