@@ -72,10 +72,8 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	}
 }
 
-void AShooterCharacter::Shoot(const FInputActionValue& Value) {
-	const bool value = Value.Get<bool>();
-
-	if (GetController() && value)
+void AShooterCharacter::Shoot() {
+	if (GetController())
 	{
 		Gun->PullTrigger();
 	}
