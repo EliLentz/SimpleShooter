@@ -31,6 +31,8 @@ public:
 
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 
+	void Shoot();
+
 	UFUNCTION(BlueprintPure)
 	bool IsDead() const;
 
@@ -60,7 +62,6 @@ private:
 	UPROPERTY()
 	APlayerController* PlayerController;
 
-	void Shoot(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
 	void Move(const FInputActionValue& Value);
 };
