@@ -4,6 +4,7 @@
 #include "ShooterCharacter.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "Gun.h"
 
 // Sets default values
@@ -39,10 +40,6 @@ void AShooterCharacter::BeginPlay()
 void AShooterCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	if (Health <= 0.f && PlayerController != nullptr) {
-		//PlayerController->DisableInput(PlayerController);
-	}
 }
 
 bool AShooterCharacter::IsDead() const {
@@ -55,6 +52,12 @@ float AShooterCharacter::TakeDamage(float DamageAmount, struct FDamageEvent cons
 	Health -= DamageToApply;
 
 	UE_LOG(LogTemp, Warning, TEXT("Current health is: %f"), Health);
+
+	if (IsDead())
+	{
+		DetachFromControllerPendingDestroy();
+		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	}
 
 	return DamageToApply;
 }
