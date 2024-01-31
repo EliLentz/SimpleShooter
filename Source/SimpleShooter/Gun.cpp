@@ -34,32 +34,46 @@ void AGun::Tick(float DeltaTime)
 
 }
 
-void AGun::PullTrigger() {
-	UGameplayStatics::SpawnEmitterAttached(MuzzleFlash, SkeletalMesh, TEXT("MuzzleFlashSocket"));
-
-	APawn* OwnerPawn = Cast<APawn>(GetOwner());
-	if (OwnerPawn == nullptr) return;
-	AController* OwnerController = OwnerPawn->GetController();
-	if (OwnerController == nullptr) return;
+bool AGun::GunTrace(FHitResult& Hit, FVector& ShotDirection)
+{
+	AController* OwnerController = GetOwnerController();
+	if (OwnerController == nullptr) return false;
 
 	FVector Location;
 	FRotator Rotation;
 	OwnerController->GetPlayerViewPoint(Location, Rotation);
+	ShotDirection = -Rotation.Vector();
 
 	FVector End = Location + Rotation.Vector() * MaxRange;
-	FHitResult HitResult;
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(this);
 	Params.AddIgnoredActor(GetOwner());
 
-	bool bSuccess = GetWorld()->LineTraceSingleByChannel(HitResult, Location, End, ECollisionChannel::ECC_GameTraceChannel1, Params);
+	return GetWorld()->LineTraceSingleByChannel(Hit, Location, End, ECollisionChannel::ECC_GameTraceChannel1, Params);
+}
+
+AController* AGun::GetOwnerController() const
+{
+	return Cast<APawn>(GetOwner())->GetController();
+}
+
+void AGun::PullTrigger() {
+	UGameplayStatics::SpawnEmitterAttached(MuzzleFlash, SkeletalMesh, TEXT("MuzzleFlashSocket"));
+
+	FHitResult Hit;
+	FVector ShotDirection;
+
+	bool bSuccess = GunTrace(Hit, ShotDirection);
 
 	if (bSuccess) {
-		FVector ShotDirection = -Rotation.Vector();
-		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), HitParticle, HitResult.Location, ShotDirection.Rotation());
-		AActor* HitActor = HitResult.GetActor();
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), HitParticle, Hit.Location, ShotDirection.Rotation());
+		AActor* HitActor = Hit.GetActor();
 		if (HitActor != nullptr) {
-			FPointDamageEvent DamageEvent(Damage, HitResult, ShotDirection, nullptr);
+			FPointDamageEvent DamageEvent(Damage, Hit, ShotDirection, nullptr);
+
+			AController* OwnerController = GetOwnerController();
+			if (OwnerController == nullptr) return;
+
 			HitActor->TakeDamage(Damage, DamageEvent, OwnerController, this);
 		}
 	}
