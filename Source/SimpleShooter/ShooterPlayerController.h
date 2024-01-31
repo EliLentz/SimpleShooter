@@ -6,6 +6,8 @@
 #include "GameFramework/PlayerController.h"
 #include "ShooterPlayerController.generated.h"
 
+class UUserWidget;
+
 /**
  *
  */
@@ -19,7 +21,10 @@ public:
 
 private:
 	UPROPERTY(EditAnywhere)
-	TSubclassOf<class UUserWidget> LoseScreenClass;
+	TSubclassOf<UUserWidget> LoseScreenClass;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UUserWidget> WinScreenClass;
 
 	UPROPERTY(EditAnywhere)
 	float RestartDelay = 5.f;

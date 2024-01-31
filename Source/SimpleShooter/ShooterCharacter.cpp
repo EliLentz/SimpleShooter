@@ -52,8 +52,6 @@ float AShooterCharacter::TakeDamage(float DamageAmount, struct FDamageEvent cons
 	DamageToApply = FMath::Min(Health, DamageToApply);
 	Health -= DamageToApply;
 
-	UE_LOG(LogTemp, Warning, TEXT("Current health is: %f"), Health);
-
 	if (IsDead())
 	{
 		AShooterGameMode* GameMode = GetWorld()->GetAuthGameMode<AShooterGameMode>();
