@@ -34,12 +34,17 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 	UParticleSystem* MuzzleFlash;
 	UPROPERTY(EditDefaultsOnly)
-	UParticleSystem* HitParticle;
+	USoundBase* MuzzleSound;
 
 	UPROPERTY(EditDefaultsOnly)
+	UParticleSystem* HitParticle;
+	UPROPERTY(EditDefaultsOnly)
+	USoundBase* HitSound;
+
+	UPROPERTY(EditAnywhere)
 	float MaxRange = 5000.f;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditAnywhere)
 	float Damage = 10.f;
 
 	bool GunTrace(FHitResult& Hit, FVector& ShotDirection);

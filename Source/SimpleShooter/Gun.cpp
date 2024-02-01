@@ -5,6 +5,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "DrawDebugHelpers.h"
 #include "Engine/DamageEvents.h"
+#include "ShooterAIController.h"
 
 // Sets default values
 AGun::AGun()
@@ -59,6 +60,7 @@ AController* AGun::GetOwnerController() const
 
 void AGun::PullTrigger() {
 	UGameplayStatics::SpawnEmitterAttached(MuzzleFlash, SkeletalMesh, TEXT("MuzzleFlashSocket"));
+	UGameplayStatics::SpawnSoundAttached(MuzzleSound, SkeletalMesh, TEXT("MuzzleFlashSocket"));
 
 	FHitResult Hit;
 	FVector ShotDirection;
@@ -73,6 +75,9 @@ void AGun::PullTrigger() {
 
 			AController* OwnerController = GetOwnerController();
 			if (OwnerController == nullptr) return;
+
+			if (Cast<AShooterAIController>(HitActor->GetInstigatorController()) != nullptr)
+				UGameplayStatics::SpawnSoundAtLocation(GetWorld(), HitSound, Hit.Location, ShotDirection.Rotation());
 
 			HitActor->TakeDamage(Damage, DamageEvent, OwnerController, this);
 		}
