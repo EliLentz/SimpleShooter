@@ -36,6 +36,9 @@ public:
 	UFUNCTION(BlueprintPure)
 	bool IsDead() const;
 
+	UFUNCTION(BlueprintPure)
+	float GetHealthPercent() const;
+
 private:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<AGun> GunClass;
