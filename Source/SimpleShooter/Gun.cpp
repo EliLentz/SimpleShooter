@@ -6,6 +6,7 @@
 #include "DrawDebugHelpers.h"
 #include "Engine/DamageEvents.h"
 #include "ShooterAIController.h"
+#include "ShooterPlayerController.h"
 
 // Sets default values
 AGun::AGun()
@@ -76,7 +77,8 @@ void AGun::PullTrigger() {
 			AController* OwnerController = GetOwnerController();
 			if (OwnerController == nullptr) return;
 
-			if (Cast<AShooterAIController>(HitActor->GetInstigatorController()) != nullptr)
+			if (Cast<AShooterAIController>(HitActor->GetInstigatorController()) != nullptr ||
+				Cast<AShooterPlayerController>(HitActor->GetInstigatorController()) != nullptr)
 				UGameplayStatics::SpawnSoundAtLocation(GetWorld(), HitSound, Hit.Location, ShotDirection.Rotation());
 
 			HitActor->TakeDamage(Damage, DamageEvent, OwnerController, this);
